@@ -1,28 +1,28 @@
-RandomNames =
+CppRandomNames =
 {
     one: ["foo","bar","baz","fiddle","faddle","bim","bam","quux","snork","snap"],
     two: ["squish","squash","smoot","spiffle","splin","squal","spork","smop","smick","smock"],
     three: ["blarp","squeeble","blurgle","podiddle","tulopulop","porskidor","swamwam"],
-    four: ["a","b","c","d","e","moop","minx","mox","mole","f","g"]
+    four: ["MOOP","Moop","mooP","MooP","mOOp","moop","minx","mox","mole","moof","moog"]
 };
 RandomReturnTypes = ["int", "float", "double", "string"];
 
-function getRandomId(randomStream, num)
-{
+function cppGetRandomId(randomStream, num)
+{getRandomId
     var id;
 
     switch(num){
         case 0:
-            id = RandomNames.one[randomStream.nextIntRange(RandomNames.one.length)];
+            id = CppRandomNames.one[randomStream.nextIntRange(CppRandomNames.one.length)];
             break;
         case 1:
-            id = RandomNames.two[randomStream.nextIntRange(RandomNames.two.length)];
+            id = CppRandomNames.two[randomStream.nextIntRange(CppRandomNames.two.length)];
             break;
         case 2:
-            id = RandomNames.three[randomStream.nextIntRange(RandomNames.three.length)];
+            id = CppRandomNames.three[randomStream.nextIntRange(CppRandomNames.three.length)];
             break;
         case 3:
-            id = RandomNames.four[randomStream.nextIntRange(RandomNames.four.length)];
+            id = CppRandomNames.four[randomStream.nextIntRange(CppRandomNames.four.length)];
             break;
         default:
             break;
@@ -47,9 +47,9 @@ function cppFunctionParametersA(randomStream)
         ];
 
     var retType = getRandomReturnType(randomStream);
-    var funcName = getRandomId(randomStream, randomStream.nextIntRange(3));
+    var funcName = cppGetRandomId(randomStream, randomStream.nextIntRange(3));
     var paramType = getRandomReturnType(randomStream);
-    var paramName = getRandomId(randomStream, 3);
+    var paramName = cppGetRandomId(randomStream, 3);
 
     this.answerChoices = [
         { value: parameterPassTypes[0][0], specialChar: parameterPassTypes[0][1],
@@ -106,8 +106,80 @@ function cppFunctionParametersA(randomStream)
 
 }
 
+function cppFunctionParametersB(randomStream)
+{
+    ///// Generate randomness of the question
+    var calledFunName = cppGetRandomId(randomStream, randomStream.nextIntRange(3));
+    var calledFunParameterName = cppGetRandomId(randomStream, 3);
+
+    var mainVarName = calledFunParameterName;
+    while(mainVarName != calledFunParameterName)
+        mainVarName = cppGetRandomId(randomStream, 3);
+    var mainVarInitialValue = 2 + randomStream.nextIntRange(97);
+    var mainVarFinalValue = mainVarInitialValue;
+
+    program = "";   // initialize program
+
+    ///// Write the called funtion
+    program += "int " + calledFunName + "(int " + calledFunParameterName + ")\n{\n";
+
+    program += "  return " + calledFunParameterName + ";\n}\n";
+
+    ///// Write the main function
+    program += "int main()\n{\n";
+    program += "  int " + mainVarName + " = " + mainVarInitialValue + ";\n\n";
+
+
+
+    program += "  std::cout << " + mainVarName + " << std::endl;\n\n";
+    program += "  return 0;\n}";
+
+    this.answerChoices = [
+        { value: mainVarFinalValue, flag: true},
+        { value: mainVarFinalValue + 1, flag: false},
+        { value: mainVarFinalValue + 2, flag: false},
+        { value: mainVarFinalValue + 3, flag: false}
+    ];
+
+    randomStream.shuffle(this.answerChoices);
+
+    this.formatQuestion = function(format) {
+        switch (format) {
+            case "HTML": return this.formatQuestionHTML();
+        }
+        return "unknown format";
+    };
+
+    this.formatQuestionHTML = function () {
+        var questionText = "<p>What is the output of the following program?</p>" +
+            "<pre>" + program + "</pre>";
+
+        questionText += "<p><strong>a) </strong>"
+            + this.answerChoices[0].value + "<br><strong>b) </strong>"
+            + this.answerChoices[1].value + "<br><strong>c) </strong>"
+            + this.answerChoices[2].value + "<br><strong>d) </strong>"
+            + this.answerChoices[3].value + "</p>";
+
+        return questionText;
+    };
+
+    this.formatAnswer = function(format) {
+        switch (format) {
+            case "HTML": return this.formatAnswerHTML();
+        }
+        return "unknown format";
+    };
+
+    this.formatAnswerHTML = function () {
+        return String.fromCharCode(this.correctIndex+97); //0 = 'a', 1 = 'b', 2 = 'c', etc...
+    };
+
+}
 
 function cppFunctionParametersQuestion(randomStream)
 {
-        return new cppFunctionParametersA(randomStream)
+    if(randomStream.nextIntRange(4) === 0)
+        return new cppFunctionParametersA(randomStream);
+    else
+        return new cppFunctionParametersB(randomStream);
 }
