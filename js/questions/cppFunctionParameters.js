@@ -113,17 +113,18 @@ function cppFunctionParametersB(randomStream)
     var calledFunParameterName = cppGetRandomId(randomStream, 3);
 
     var mainVarName = calledFunParameterName;
-    while(mainVarName != calledFunParameterName)
+    while(mainVarName == calledFunParameterName)
         mainVarName = cppGetRandomId(randomStream, 3);
     var mainVarInitialValue = 2 + randomStream.nextIntRange(97);
     var mainVarFinalValue = mainVarInitialValue;
 
-    program = "";   // initialize program
+    var program = "";   // initialize program
+    program += "#include &lt;iostream>\n\n";
 
     ///// Write the called funtion
     program += "int " + calledFunName + "(int " + calledFunParameterName + ")\n{\n";
 
-    program += "  return " + calledFunParameterName + ";\n}\n";
+    program += "  return " + calledFunParameterName + ";\n}\n\n";
 
     ///// Write the main function
     program += "int main()\n{\n";
@@ -178,7 +179,7 @@ function cppFunctionParametersB(randomStream)
 
 function cppFunctionParametersQuestion(randomStream)
 {
-    if(randomStream.nextIntRange(4) === 0)
+    if(randomStream.nextIntRange(3) === 0)
         return new cppFunctionParametersA(randomStream);
     else
         return new cppFunctionParametersB(randomStream);
