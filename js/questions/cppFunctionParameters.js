@@ -330,8 +330,11 @@ function cppFunctionParametersB(randomStream)
     }
 
     // randomize all possible distractor answers, pick first 3, push correct, re-randomize (use arr.slice())
-    randomStream.shuffle(this.answerChoices);
+    //randomStream.shuffle(this.answerChoices);
 
+    for(var ii = 0; ii < this.answerChoices.length; ++ii)
+        if(this.answerChoices[ii].flag == true)
+            this.correctIndex = ii;
 
     ///// write out the program
     var program = "";   // initialize program
@@ -454,8 +457,10 @@ function cppFunctionParametersB(randomStream)
 
 function cppFunctionParametersQuestion(randomStream)
 {
+/*
     if(randomStream.nextIntRange(3) === 0)
         return new cppFunctionParametersA(randomStream);
     else
+*/
         return new cppFunctionParametersB(randomStream);
 }
